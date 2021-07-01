@@ -1,21 +1,21 @@
 #!/bin/bash
 
+echo "This script can be used to train a TPG in the VVCPartdatabase environment. It's often used through launch_many_scripts_VVCPartDatabase.sh."
+
 # Checking the good use of the script
 if [ "$#" -ne 5 ]; then
     echo "Illegal number of parameters"
-    echo "Usage: launch_1train_TPG.sh NAME_OF_TRAINING NAME_OF_EXECUTABLE PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR SEED"
-    echo "Example: /home/cleonard/dev/stage/scripts/launch_1train_TPG.sh BIG_training TPGVVCPartDatabase_featuresEnv /home/cleonard/dev/TpgVvcPartDatabase/ /home/cleonard/dev/stage/results/scripts_results/ 2021"
+    echo "Usage: launch_1train_TPG.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR NAME_OF_TRAINING NAME_OF_EXECUTABLE SEED"
+    echo "Example: /home/cleonard/dev/stage/scripts/VVCPartDatabase/launch_1train_TPG.sh /home/cleonard/dev/TpgVvcPartDatabase/ /home/cleonard/dev/stage/results/scripts_results/ BIG_training TPGVVCPartDatabase_featuresEnv 2021"
     exit
 fi
 
-
 # Extracting parameters
-pathExec=$1                     # "/home/cleonard/dev/TpgVvcPartDatabase/"
-pathRes=$2                      # "/home/cleonard/dev/stage/results/scripts_results/Features/"$name"/"
-name=$3                         # UNUSED
-nameExec=$4                     # "TPGVVCPartDatabase_featuresEnv"
-seed=$5                         # "2021"
-
+pathExec=$1
+pathRes=$2
+name=$3
+nameExec=$4
+seed=$5
 
 # Time the script
 startTime=$SECONDS
@@ -38,12 +38,12 @@ confMatFile=confMat"$fileName"
 echo "Execute and redirect logs in "$logsFile".txt"
 "$pathExec"build/"$nameExec" $seed > "$pathExec"build/"$logsFile".txt
 
-# Print the duration of this training
+# Compute the duration of this training
 time=$(( SECONDS - $startTime ))
 let "min = time/60"
 let "sec = time%60"
 
-# Storing best generation score (and the corresponding policy .md)
+# Store best generation score (and the corresponding policy .md)
 everyScore=`cat "$pathExec"fileClassificationTable.txt | grep -o '[0-9]*\.[0-9]*$' | sort -n`
 bestScore=`echo $everyScore | perl -ne 'print if eof' | grep -o '[0-9]*\.[0-9]*$'`
 genBestScore=`cat "$pathExec"fileClassificationTable.txt | grep "$bestScore" | grep -o '^\s*[0-9]*' | sort -n | perl -ne 'print if eof' | grep -o '[0-9]*$'`

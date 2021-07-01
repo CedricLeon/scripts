@@ -1,9 +1,11 @@
 #!/bin/bash
+echo "This script can be used to launch many times a specific script and to stores its result in different directories (Usage example: seed behavior study)."
+echo "CARE : if the RESULT_DIR already exist this script will empty it ! Read the script carefully"
 
 # Checking the good use of the script
 if [ "$#" -ne 7 ]; then
     echo "Illegal number of parameters"
-    echo "Usage: launch_many_scripts.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR SCRIPT_NAME TRAINING_NAME EXECUTABLE_NAME FIRST_TRAINING_NUMBER LAST_TRAINING_NUMBER"
+    echo "Usage: launch_many_scripts_VVCPartDatabase.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR SCRIPT_NAME TRAINING_NAME EXECUTABLE_NAME FIRST_TRAINING_NUMBER LAST_TRAINING_NUMBER"
     echo "Example: /home/cleonard/dev/stage/scripts/VVCPartDatabase/launch_many_scripts_VVCPartDatabase.sh /home/cleonard/dev/TpgVvcPartDatabase/ /home/cleonard/dev/stage/results/scripts_results/ /home/cleonard/dev/stage/scripts/paramStudy/VVCPartDatabase/launch_1train_TPG.sh BIG_training TPGVVCPartDatabase_featuresEnv 1 5"
     exit
 fi
@@ -16,7 +18,6 @@ trainingName=$4
 nameExecutable=$5
 firstNumTrain=$6
 lastNumTrain=$7
-
 
 # Storing trainings parameters
 echo "Copy trainings parameters \"params.json\" in $pathRes"

@@ -6,25 +6,20 @@ from os.path import isfile, join
 import shutil
 import csv
 import time
+import re
 
 # Defining paths
-path_dataset_origin = '/home/cleonard/Data/features/balanced1/' # unbalanced
-path_dataset_arrival = '/home/cleonard/Data/features/balanced2/' # balanced1
-
-# If balancing the database, Init the nbMax elements of each class
-# For "/home/cleonard/Data/features/unbalanced/" min class is "TTH" with 119375 elements
-nbMax = 100000
+path_dataset_origin = sys.argv[1]   # '/home/cleonard/Data/features/32x32_unbalanced/'
+store_file = sys.argv[2]            # '/media/cleonard/alex/cedric_TPG-VVC/unbalanced_datasets/AllDtbCompo.txt'
+dtb = path_dataset_origin.split('/')[-2]
 
 # Picking every file
 fichiers = [f for f in listdir(path_dataset_origin) if isfile(join(path_dataset_origin, f))]
 
-# Shuffle files
-np.random.shuffle(fichiers)
+# Init count
 count = [0,0,0,0,0,0]
 
-# Init index to rename files
-i = 0
-
+# Browse files
 for file in tqdm(fichiers):
 
     # Open each file in the repertory
@@ -66,21 +61,13 @@ for file in tqdm(fichiers):
                 # Only counting
                 count[split] += 1
 
-                # Balance the database
-                # if count[split] < nbMax:
-                #     # Transform row in a string by concatenating each word and a ','
-                #     data = ""
-                #     for word in row[1:]: # We don't take the first word with corresponds to the "CU" number in the original csv file: no interest
-                #         data += word + ','
-                #     data = data[:-1]
-                #     #print(data)
+total = 0
+for cnt in count:
+    total = total + cnt
 
-                #     # Create or overwrite a file and write data in it
-                #     file = open(path_dataset_arrival + str(i) + ".csv", "w")
-                #     file.write(data)
+print("Database : ", dtb)
+print("Count : ", count)
+print("Total : ", total)
 
-                #     # Increment the index of copied files
-                #     i += 1
-
-print(count)
-print(i)
+with open(store_file, "a") as file:
+    file.write(str(dtb)+" "+str(count)+" "+str(total)+"\n")

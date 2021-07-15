@@ -1,15 +1,13 @@
 #!/bin/bash
 
-# $1 : Path to the program directory (ex: /home/cleonard/dev/TpgVvcPartDatabase/)
-# $2 : Path to store the results (ex: /home/cleonard/dev/stage/results/scripts_results/)
-# $3 : Name of the studied parameter (ex: nbRoots)
-# $4 : Seed of the MNIST training (ex: 2021)
+echo "This script can be used to study the behaviour of many parameters on GEGELATI example MNIST application. It's a variation of launch_MNIST_diff-Param_2.sh with X parameters, but these parameters will all have the same value. It launches many trainings with different values of the specified parameters in the same environment (conditions). Result files are stored in the specified directory."
+echo "CARE: you should check and modify the serie of your parameters values."
 
 # Check the good use of the script
 if [ "$#" -ne 4 ]; then
     echo "Illegal number of parameters"
-    echo "Usage: launch_MNIST_diff-Param.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR PARAM_NAME PARAM_CURRENT_VALUE"
-    echo "Example: /home/cleonard/dev/stage/scripts/launch_MNIST_diff-Param.sh /home/cleonard/dev/gegelati-apps/mnist/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/ maxProgramSize 2021"
+    echo "Usage: launch_MNIST_diff-Param_all-prob.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR PARAM_NAME SEED"
+    echo "Example: /home/cleonard/dev/stage/scripts/paramStudy/launch_MNIST_diff-Param_all-prob.sh /home/cleonard/dev/gegelati-apps/mnist/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/ AllTPGProb 2021"
     exit
 fi
 
@@ -24,16 +22,13 @@ p4="pSwap"
 param=$3
 seed=$4
 
-# # INTEGER: Get the original value of the param (in order to use sed)
-# originalParam=`cat "$pathExec"params.json | grep "\"$param\"" | grep -o '[0-9]*'`
-# last=$originalParam
-
 # FLOAT: Get the original value of the param (in order to use sed)
 originalP1=`cat "$pathExec"params.json | grep "\"$p1\"" | grep -o '[0-9]*\.[0-9]*'`
 originalP2=`cat "$pathExec"params.json | grep "\"$p2\"" | grep -o '[0-9]*\.[0-9]*'`
 originalP3=`cat "$pathExec"params.json | grep "\"$p3\"" | grep -o '[0-9]*\.[0-9]*'`
 originalP4=`cat "$pathExec"params.json | grep "\"$p4\"" | grep -o '[0-9]*\.[0-9]*'`
 #originalP5=`cat "$pathExec"params.json | grep "\"$p5\"" | grep -o '[0-9]*\.[0-9]*'`
+
 lastP1=$originalP1
 lastP2=$originalP2
 lastP3=$originalP3
@@ -44,7 +39,10 @@ lastP4=$originalP4
 nbGen=`cat "$pathExec"params.json | grep "\"nbGenerations\"" | grep -o '[0-9]*'`
 
 # Training number (to identify results)
-let "i = 0"
+let "i = 1"
+
+# Script duration
+start=$SECONDS
 
 echo "***********************************************************************************************"
 
@@ -91,14 +89,12 @@ for new in 0,01 $(seq 0.05 0.05 1.0); do
 
     # Print the duration of this training
     time=$(( SECONDS - $startTime ))
-    let "min = time/60"
-    let "sec = time%60"
 
     # Store best generation score (and the corresponding policy .md)
     everyScore=`cat "$pathExec"fileClassificationTable.txt | grep -o '[0-9]*\.[0-9]*$' | sort -n`
     bestScore=`echo $everyScore | perl -ne 'print if eof' | grep -o '[0-9]*\.[0-9]*$'` #awk '{print $NF}'`
     genBestScore=`cat "$pathExec"fileClassificationTable.txt | grep "$bestScore" | grep -o '^\s*[0-9]*' | sort -n | perl -ne 'print if eof' | grep -o '[0-9]*$'`
-    echo "Best Score: $bestScore at generation $genBestScore in "$min"min"$sec"s or "$time"s"
+    printf 'Best Score: %s at generation number %d in %dh:%dm:%ds\n' $bestScore $genBestScore $(($time/3600)) $(($time%3600/60)) $(($time%60))
     bestScore="${bestScore/./,}"  # Replace . with , (Libre Office Calc usage)
     echo "$i $new $time $genBestScore $bestScore" >> "$resultFile"
 
@@ -115,6 +111,7 @@ for new in 0,01 $(seq 0.05 0.05 1.0); do
     lastP3=$new
     lastP4=$new
     #lastP5=$new
+
     let "i += 1"
 done
 
@@ -129,9 +126,5 @@ sed -i "s/\"$p4\": $lastP4/\"$p4\": $originalP4/g" "$pathExec"params.json
 echo "***********************************************************************************************"
 
 # Compute and print running time
-duration=$(( SECONDS - start ))
-let "min = duration/60"
-let "hour = min/60"
-let "min = min%60"
-echo "The script runned for $duration seconds, or "$hour"h"$min""
-echo ' '
+time=$(( SECONDS - $start ))
+printf 'Total training time: %dh:%dm:%ds\n' $(($time/3600)) $(($time%3600/60)) $(($time%60))

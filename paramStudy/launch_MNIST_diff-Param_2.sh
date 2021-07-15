@@ -1,15 +1,13 @@
 #!/bin/bash
 
-# $1 : Path to the program directory (ex: /home/cleonard/dev/TpgVvcPartDatabase/)
-# $2 : Path to store the results (ex: /home/cleonard/dev/stage/results/scripts_results/)
-# $3 : Name of the studied parameter (ex: nbRoots)
-# $4 : Seed of the MNIST training (ex: 2021)
+echo "This script can be used to study the behaviour of 2 parameters on GEGELATI example MNIST application. It's a variation of launch_MNIST_diff-Param_1.sh with 2 parameters. It launches many trainings with different values of the specified parameters in the same environment (conditions). Result files are stored in the specified directory."
+echo "CARE: depending on the type of your parameter (FLOAT / INT) tou may need to modify the script. You should also check and modify the serie of your parameter values."
 
 # Check the good use of the script
 if [ "$#" -ne 4 ]; then
     echo "Illegal number of parameters"
-    echo "Usage: launch_MNIST_diff-Param.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR PARAM_NAME PARAM_CURRENT_VALUE"
-    echo "Example: /home/cleonard/dev/stage/scripts/launch_MNIST_diff-Param.sh /home/cleonard/dev/gegelati-apps/mnist/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/ maxProgramSize 2021"
+    echo "Usage: launch_MNIST_diff-Param_2.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR PARAM_NAME SEED"
+    echo "Example: /home/cleonard/dev/stage/scripts/paramStudy/launch_MNIST_diff-Param_2.sh /home/cleonard/dev/gegelati-apps/mnist/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/ pEdge 2021"
     exit
 fi
 
@@ -23,8 +21,10 @@ param2=pSwap
 seed=$4
 
 # # INTEGER: Get the original value of the param (in order to use sed)
-# originalParam=`cat "$pathExec"params.json | grep "\"$param\"" | grep -o '[0-9]*'`
-# last=$originalParam
+# originalParam1=`cat "$pathExec"params.json | grep "\"$param1\"" | grep -o '[0-9]*'`
+# last1=$originalParam1
+# originalParam2=`cat "$pathExec"params.json | grep "\"$param2\"" | grep -o '[0-9]*'`
+# last2=$originalParam2
 
 # FLOAT: Get the original value of the param (in order to use sed)
 originalParam1=`cat "$pathExec"params.json | grep "\"$param1\"" | grep -o '[0-9]*\.[0-9]*'`
@@ -37,7 +37,10 @@ last2=$originalParam2
 nbGen=`cat "$pathExec"params.json | grep "\"nbGenerations\"" | grep -o '[0-9]*'`
 
 # Training number (to identify results)
-let "i = 0"
+let "i = 1"
+
+# Script duration
+start=$SECONDS
 
 echo "***********************************************************************************************"
 
@@ -78,21 +81,19 @@ for new in 0,01 $(seq 0.05 0.05 0.8) $(seq 0.82 0.02 1.0); do
     #/usr/local/bin/cmake "$pathExec" -DCMAKE_BUILD_TYPE=Release
     /usr/local/bin/cmake --build "$pathExec"bin/ --target mnist -- -j 38
 
-    # Start the training (default: 200 generations ?)
+    # Start the training
     # No &, we don't want to fork in this script : no parallel execution
     echo "Executing and storing results in "$pathExec"bin/"$logsFile""
     "$pathExec"bin/Release/mnist $seed > "$pathExec"bin/"$logsFile"
 
     # Print the duration of this training
     time=$(( SECONDS - $startTime ))
-    let "min = time/60"
-    let "sec = time%60"
 
     # Store best generation score (and the corresponding policy .md)
     everyScore=`cat "$pathExec"fileClassificationTable.txt | grep -o '[0-9]*\.[0-9]*$' | sort -n`
     bestScore=`echo $everyScore | perl -ne 'print if eof' | grep -o '[0-9]*\.[0-9]*$'` #awk '{print $NF}'`
     genBestScore=`cat "$pathExec"fileClassificationTable.txt | grep "$bestScore" | grep -o '^\s*[0-9]*' | sort -n | perl -ne 'print if eof' | grep -o '[0-9]*$'`
-    echo "Best Score: $bestScore at generation $genBestScore in "$min"min"$sec"s or "$time"s"
+    printf 'Best Score: %s at generation number %d in %dh:%dm:%ds\n' $bestScore $genBestScore $(($time/3600)) $(($time%3600/60)) $(($time%60))
     bestScore="${bestScore/./,}"  # Replace . with , (Libre Office Calc usage)
     echo "$i $value1 $value2 $time $genBestScore $bestScore" >> "$resultFile"
 
@@ -117,9 +118,5 @@ sed -i "s/\"$param2\": $last2/\"$param2\": $originalParam2/g" "$pathExec"params.
 echo "***********************************************************************************************"
 
 # Compute and print running time
-duration=$(( SECONDS - start ))
-let "min = duration/60"
-let "hour = min/60"
-let "min = min%60"
-echo "The script runned for $duration seconds, or "$hour"h"$min""
-echo ' '
+time=$(( SECONDS - $start ))
+printf 'Total training time: %dh:%dm:%ds\n' $(($time/3600)) $(($time%3600/60)) $(($time%60))

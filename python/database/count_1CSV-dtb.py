@@ -8,12 +8,7 @@ import csv
 import time
 
 # Defining paths
-path_dataset_origin = '/home/cleonard/Data/features/balanced1/' # unbalanced
-path_dataset_arrival = '/home/cleonard/Data/features/balanced1/' # balanced1
-
-# If balancing the database, Init the nbMax elements of each class
-# For "/home/cleonard/Data/features/unbalanced/" min class is "TTH" with 119375 elements
-nbMax = 2
+path_dataset_origin = "/media/cleonard/alex/cedric_TPG-VVC/balanced_datasets/16x16_balanced/" # unbalanced
 
 # Picking every file
 fichiers = [f for f in listdir(path_dataset_origin) if isfile(join(path_dataset_origin, f))]
@@ -21,9 +16,6 @@ fichiers = [f for f in listdir(path_dataset_origin) if isfile(join(path_dataset_
 # Shuffle files
 np.random.shuffle(fichiers)
 count = [0,0,0,0,0,0]
-
-# Init index to rename files
-i = 0
 
 for file in tqdm(fichiers):
 
@@ -53,10 +45,12 @@ for file in tqdm(fichiers):
                 split = 5;
             else:
                 print("WTF : ", splitString)
-                    sys.exit("Unknown split name in : ", csv_file)
+                sys.exit("Unknown split name in : ", csv_file)
 
             # Only counting
             count[split] += 1
+total = 0
+for cnt in count:
+    total = total + cnt
 
-print(count)
-print(i)
+print("Count:", count, "Total:", total)

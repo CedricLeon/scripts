@@ -3,42 +3,46 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-def get_data_from_file(fileName):
+def get_data_from_file(fileName1, fileName2):
 
     # Get file name
-    print("File name : ", str(fileName))
+    print("File name : ", str(fileName1), ", ", str(fileName2))
 
-    # Open file, get every line except the 3 first
-    file = open(str(fileName), "r")
-    data = file.readlines()[3:]
+    # Open file, get every line except the 2 first
+    file1 = open(str(fileName1), "r")
+    data1 = file1.readlines()[2:]
 
-    file.close()
+    file2 = open(str(fileName2), "r")
+    data2 = file2.readlines()[2:]
+
+    file1.close()
+    file2.close()
 
     param1 = []
     param2 = []
     score = []
 
-    for i in range(len(data)):
+    for i in range(len(data1)):
 
         # Split data in a tab containing every pair
-        values = data[i].split(";")
-        # values = "Training nbRoots ratioDeletedRoots ScoreN°1 ScoreN°2 ScoreN°3 Moyenne GenerationN°1 GenerationN°2 GenerationN°3 Moyenne Temps"
+        values1 = data1[i].split(" ")
+        values2 = data2[i].split(" ")
         # values = list(valuesSet)
-        param1.append(float(values[1]))  # ( (float(values1[1]) + float(values2[1])) / 2)
-        param2.append(float(values[2]))  # ( (float(values1[2]) + float(values2[2])) / 2 )
-        score.append(float(values[6][:-2].replace(',','.')))
+        param1.append(float(values1[1]))  # ( (float(values1[1]) + float(values2[1])) / 2)
+        param2.append(float(values1[1]))  # ( (float(values1[2]) + float(values2[2])) / 2 )
+        score.append( (float(values1[4][:-2].replace(',','.')) + float(values2[4][:-2].replace(',','.'))) / 2)
         # [:-2] to remove '\n' char at the end of the line
 
     return [np.array(param1), np.array(param2), np.array(score)]
 
 
-fileName = "/home/cleonard/dev/stage/results/MoyRoots.csv" #"/home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/Roots1/lastScore.logs"
-#fileName2 = "/home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/Roots1/lastScore.logs" # sys.argv[2]
-#fileName3 = "/home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/Roots1/lastScore.logs" # sys.argv[3]
+fileName1 = "/home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/Roots1/lastScore.logs" # sys.argv[1]
+fileName2 = "/home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/Roots1/lastScore.logs" # sys.argv[2]
+#fileName = "/home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/Roots1/lastScore.logs" # sys.argv[3]
 
 print("Script name : ", str(sys.argv[0]))
 
-[x_array, y_array, z_array] = get_data_from_file(fileName)
+[x_array, y_array, z_array] = get_data_from_file(fileName1, fileName2)
 
 # print("Param N°1 : ", x_array, " param N°1 length : ", x_array.size)
 # print("Param N°2 : ", y_array, " param N°2 length : ", y_array.size)

@@ -1,13 +1,15 @@
 #!/bin/bash
 
-echo "This script can be used to study the behaviour of 2 parameters depending on the other on GEGELATI example MNIST application. It launches many trainings with different values of the specified parameter in the same environment (conditions). Result files are stored in the specified directory."
-echo "CARE: depending on the type of your parameter (FLOAT / INT) tou may need to modify the script. You should also check and modify the serie of your parameter values."
+# $1 : Path to the program directory (ex: /home/cleonard/dev/TpgVvcPartDatabase/)
+# $2 : Path to store the results (ex: /home/cleonard/dev/stage/results/scripts_results/)
+# $3 : Name of the studied parameter (ex: nbRoots)
+# $4 : Seed of the MNIST training (ex: 2021)
 
 # Check the good use of the script
 if [ "$#" -ne 4 ]; then
     echo "Illegal number of parameters"
-    echo "Usage: launch_MNIST_diff-Param_double_study.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR PARAM_NAME SEED"
-    echo "Example: /home/cleonard/dev/stage/scripts/paramStudy/launch_MNIST_diff-Param_double_study.sh /home/cleonard/dev/gegelati-apps/mnist/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/ 10kRoots 2021"
+    echo "Usage: launch_MNIST_diff-Param_double_study.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR PARAM1_NAME SEED"
+    echo "Example: /home/cleonard/dev/stage/scripts/launch_MNIST_diff-Param.sh /home/cleonard/dev/gegelati-apps/mnist/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/ Roots 2021"
     exit
 fi
 
@@ -30,21 +32,18 @@ last2=$originalParam2
 nbGen=`cat "$pathExec"params.json | grep "\"nbGenerations\"" | grep -o '[0-9]*'`
 
 # Training number (to identify results)
-let "i = 8"
-
-# Script duration
-start=$SECONDS
+let "i = 1"
 
 echo "***********************************************************************************************"
 
 # Initialise the file containing final results
 resultFile="$pathRes"lastScore.logs
 echo "Final results are stored in \"$resultFile\""
-# echo "Tested Params: $param1 and $param2. Trainings lead on MNIST with default Kelly parameters on $nbGen generations. With seed : $seed." > "$resultFile"
-# echo "Training $param1 $param2 Temps Generation Score" >> "$resultFile"
+echo "Tested Params: $param1 and $param2. Trainings lead on MNIST with default Kelly parameters on $nbGen generations. With seed : $seed." > "$resultFile"
+echo "Training $param1 $param2 Temps Generation Score" >> "$resultFile"
 
 # Main loop
-for new1 in 10000; do #1 5 10 50 100 500 1000 2000 3000; do
+for new1 in 1 5 10 30 50 100 360 500 1000 2000; do
 
     # Modify the params.json file with the new value of the studied parameter
     echo " "
@@ -112,5 +111,10 @@ sed -i "s/\"$param2\": $last2/\"$param2\": $originalParam2/g" "$pathExec"params.
 echo "***********************************************************************************************"
 
 # Compute and print running time
-time=$(( SECONDS - $start ))
-printf 'Total training time: %dh:%dm:%ds\n' $(($time/3600)) $(($time%3600/60)) $(($time%60))
+duration=$(( SECONDS - start ))
+let "min = duration/60"
+let "hour = min/60"
+let "min = min%60"
+echo "The script runned for "$duration" seconds, or "$hour"h"$min" "
+printf '%dh:%dm:%ds\n' $(($duration/3600)) $(($duration%3600/60)) $(($duration%60))
+echo " "

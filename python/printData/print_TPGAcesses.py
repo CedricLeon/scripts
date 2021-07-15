@@ -3,6 +3,9 @@ import sys
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
+print("This script ")
+
+# Global variable
 size = 32
 
 # Get file name

@@ -1,12 +1,12 @@
 #!/bin/bash
 
-echo "This script can be used to train and store 5 binary TPGs in the VVCPartdatabase environment."
+echo "This script can be used to train and store 5 binary TPGs in the VVCPartdatabase environment. It's a variation of launch_NP-Train_diff-Actions.sh, the specific action can be specified and is not necessarily 0, 1, 2, 3, 4 or 5 (CARE : Up-to-date only the TPGVVCPartDatabase_binaryFeaturesEnv executable offers such feature);"
 
 # Check the good use of the script
 if [ "$#" -ne 3 ]; then
     echo "Illegal number of parameters"
-    echo "Usage: launch_NP-Train_diff-Actions.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR EXECUTABLE_NAME"
-    echo "Example: /home/cleonard/dev/stage/scripts/VVCPartDatabase/launch_NP-Train_diff-Actions.sh /home/cleonard/dev/TpgVvcPartDatabase/ /home/cleonard/dev/stage/results/scripts_results/ TPGVVCPartDatabase_binaryFeaturesEnv"
+    echo "Usage: launch_NP-Train_diff-Actions_personnalized.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR EXECUTABLE_NAME"
+    echo "Example: /home/cleonard/dev/stage/scripts/VVCPartDatabase/launch_NP-Train_diff-Actions_personnalized.sh /home/cleonard/dev/TpgVvcPartDatabase/ /home/cleonard/dev/stage/results/scripts_results/ TPGVVCPartDatabase_binaryFeaturesEnv"
     exit
 fi
 
@@ -23,17 +23,15 @@ execName=$3
 #      |------|
 #     QT     OTHER
 #              |
-#           |------|
-#          BTH   OTHER
-#                  |
-#               |------|
-#              BTV   OTHER
-#                      |
-#                   |------|
-#                  TTH    TTV
+#          |--------|
+#        HORI     VERTI
+#         |         |
+#     |-----|    |-----|
+#    BTH   TTH  BTV   TTV
 
-actions0=( "NP" "QT" "BTH" "BTV" "TTH" "TTV" )
-actions1=( "{1,2,3,4,5}" "{0,2,3,4,5}" "{0,1,3,4,5}" "{0,1,2,4,5}" "{0,1,2,3,5}" "{0,1,2,3,4}")
+actionsName=( "NP" "QT" "DIREC" "HORI" "VERTI" )
+actions0=( "{0}" "{1}" "{2,4}" "{2}" "{3}" )
+actions1=( "{1,2,3,4,5}" "{2,3,4,5}" "{3,5}" "{4}" "{5}" )
 
 # Training number (to store results)
 let "i = 1"
@@ -47,7 +45,7 @@ echo " "
 echo "Final results are stored in \"$resultFile\""
 echo "Final scores of each training :" > "$resultFile"
 echo " " >> "$resultFile"
-echo "N°Action Actions1 Time BestGeneration Score" >> "$resultFile"
+echo "Action0 Actions1 Time BestGeneration Score" >> "$resultFile"
 
 # Storing trainings parameters
 echo "Copy trainings parameters \"params.json\" in $pathRes"
@@ -64,7 +62,7 @@ mkdir "$pathRes"all
 cp "$pathRes"params.json "$pathRes"all/params.json
 
 # Main loop
-for action in 0 1 2 3 4 5; do # NP QT BTH BTV TTH
+for train in 0 1 2 3 4; do
     echo " "
     echo "Training N°$i"
 
@@ -72,15 +70,15 @@ for action in 0 1 2 3 4 5; do # NP QT BTH BTV TTH
     startTime=$SECONDS
 
     # Update paths
-    nameAct="${actions0[action]}"
+    nameAct="${actionsName[train]}"
     fileName=_ent"$i"_b"$nameAct"
     logsFile=logs"$fileName"
     confMatFile=confMat"$fileName"
 
     # Start the training (No &, we don't want to fork in this script : no parallel execution)
     echo "Execute and redirect logs in "$logsFile".txt"
-    echo "Call "$pathExec"build/$execName "\"{$action}\"" "\"${actions1[action]}\"" "1" "32" "32" "112" "686088" $nameAct > "$pathExec"build/"$logsFile".txt"
-    "$pathExec"build/$execName "\"{$action}\"" "\"${actions1[action]}\"" "1" "32" "32" "112" "686088" $nameAct > "$pathExec"build/"$logsFile".txt
+    echo "Call "$pathExec"build/$execName "\"${actions0[train]}\"" "\"${actions1[train]}\"" "0" "32" "32" "112" "100000" $nameAct > "$pathExec"build/"$logsFile".txt"
+    "$pathExec"build/"$execName" "\"${actions0[train]}\"" "\"${actions1[train]}\"" "0" "32" "32" "112" "100000" $nameAct > "$pathExec"build/"$logsFile".txt
     # Full DTB : 686088 || Else : 100000
 
     # Compute the duration of this training
@@ -92,7 +90,9 @@ for action in 0 1 2 3 4 5; do # NP QT BTH BTV TTH
     genBestScore=`cat "$pathExec"fileClassificationTable.txt | grep "$bestScore" | grep -o '^\s*[0-9]*' | sort -n | perl -ne 'print if eof' | grep -o '[0-9]*$'`
     printf 'Best Score: %s at generation number %d in %dh:%dm:%ds\n' $bestScore $genBestScore $(($time/3600)) $(($time%3600/60)) $(($time%60))
     bestScore="${bestScore/./,}"  # Replace . with , (Libre Office Calc usage)
-    echo "$action "\"${actions1[action]}\"" $time $genBestScore $bestScore" >> "$resultFile"
+
+    echo "Best Score: $bestScore at generation number $genBestScore in "$min"min"$sec"s or "$time"s"
+    echo ""\"${actions0[train]}\"" "\"${actions1[train]}\"" $time $genBestScore $bestScore" >> "$resultFile"
 
     # Store whole files (logs.txt + best_root.dot + best_stats.md + confMat.txt + bestPolicyStats.md)
     echo "Store results in "$pathRes""$nameAct"/"

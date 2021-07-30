@@ -77,12 +77,12 @@ for action in 0 1 2 3 4 5; do # NP QT BTH BTV TTH
     logsFile=logs"$fileName"
     confMatFile=confMat"$fileName"
 
-    # Start the training (No &, we don't want to fork in this script : no parallel execution)
+    # Start the training
     echo "Execute and redirect logs in "$logsFile".txt"
-    echo "Call "$pathExec"build/$execName "\"{$action}\"" "\"${actions1[action]}\"" "1" "32" "32" "112" "686088" $nameAct > "$pathExec"build/"$logsFile".txt"
-    "$pathExec"build/$execName "\"{$action}\"" "\"${actions1[action]}\"" "1" "32" "32" "112" "686088" $nameAct > "$pathExec"build/"$logsFile".txt
-    # Full DTB : 686088 || Else : 100000
+    echo "Call "$pathExec"build/$execName "\"{$action}\"" "\"${actions1[action]}\"" "1" "16" "16" "24" "50220" $nameAct "/media/cleonard/alex/cedric_TPG-VVC/balanced_datasets/64x16_binary-50%/" "0" > "$pathExec"build/"$logsFile".txt"
 
+    "$pathExec"build/$execName "\"{$action}\"" "\"${actions1[action]}\"" "1" "16" "16" "24" "50220" $nameAct "/media/cleonard/alex/cedric_TPG-VVC/balanced_datasets/16x16_binary-50%/" "0" > "$pathExec"build/"$logsFile".txt
+s
     # Compute the duration of this training
     time=$(( SECONDS - $startTime ))
 

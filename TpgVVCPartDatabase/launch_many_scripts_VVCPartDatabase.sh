@@ -1,4 +1,5 @@
 #!/bin/bash
+
 echo "This script can be used to launch many times a specific script and to stores its result in different directories (Usage example: seed behavior study)."
 echo "CARE : if the RESULT_DIR already exist this script will empty it ! Read the script carefully"
 
@@ -6,7 +7,7 @@ echo "CARE : if the RESULT_DIR already exist this script will empty it ! Read th
 if [ "$#" -ne 7 ]; then
     echo "Illegal number of parameters"
     echo "Usage: launch_many_scripts_VVCPartDatabase.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR SCRIPT_NAME TRAINING_NAME EXECUTABLE_NAME FIRST_TRAINING_NUMBER LAST_TRAINING_NUMBER"
-    echo "Example: /home/cleonard/dev/stage/scripts/VVCPartDatabase/launch_many_scripts_VVCPartDatabase.sh /home/cleonard/dev/TpgVvcPartDatabase/ /home/cleonard/dev/stage/results/scripts_results/ /home/cleonard/dev/stage/scripts/paramStudy/VVCPartDatabase/launch_1train_TPG.sh BIG_training TPGVVCPartDatabase_featuresEnv 1 5"
+    echo "Example: /home/cleonard/dev/stage/scripts/VVCPartDatabase/launch_many_scripts_VVCPartDatabase.sh /home/cleonard/dev/TpgVvcPartDatabase/ /home/cleonard/dev/stage/results/scripts_results/ /home/cleonard/dev/stage/scripts/VVCPartDatabase/launch_1train_TPG.sh BIG_training TPGVVCPartDatabase_featuresEnv 1 5"
     exit
 fi
 
@@ -23,6 +24,8 @@ lastNumTrain=$7
 echo "Copy trainings parameters \"params.json\" in $pathRes"
 cp "$pathExec"params.json "$pathRes"params.json
 echo " "
+
+echo "SEED BEST_SCORE GEN_BEST_SCORE TIME" > "$pathRes"recap.logs
 
 # Launch ($lastNumTrain - $firstNumTrain) trainings to study parameter behavior and stores results in different directories
 for i in $(seq $firstNumTrain $lastNumTrain); do
@@ -45,8 +48,7 @@ for i in $(seq $firstNumTrain $lastNumTrain); do
 
     # Call the script launching the study with the corresponding result repertory (and seed)
     echo "Launch  $scriptName"
-    $scriptName "$pathExec" "$currentDir"/ $trainingName $nameExecutable $i
-
+    $scriptName "$pathExec" "$currentDir"/ "$trainingName""$i" $nameExecutable $i
 
     echo " "
 done

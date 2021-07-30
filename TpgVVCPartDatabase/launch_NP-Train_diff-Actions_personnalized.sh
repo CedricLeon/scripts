@@ -53,6 +53,7 @@ cp "$pathExec"params.json "$pathRes"params.json
 
 # Build and compile the executable
 echo "Build and compile TPGVVCPartDatabase_binary"
+
 # Since last cmake update (3.19.8) bash doesn't find cmake in /usr/bin/, so I call the default cmake (included in $PATH)
 /usr/local/bin/cmake "$pathExec" -DCMAKE_BUILD_TYPE=Release -DTESTING=1
 /usr/local/bin/cmake --build "$pathExec"build/ --target $execName -- -j 38
@@ -75,11 +76,10 @@ for train in 0 1 2 3 4; do
     logsFile=logs"$fileName"
     confMatFile=confMat"$fileName"
 
-    # Start the training (No &, we don't want to fork in this script : no parallel execution)
+    # Start the training
     echo "Execute and redirect logs in "$logsFile".txt"
     echo "Call "$pathExec"build/$execName "\"${actions0[train]}\"" "\"${actions1[train]}\"" "0" "32" "32" "112" "100000" $nameAct > "$pathExec"build/"$logsFile".txt"
     "$pathExec"build/"$execName" "\"${actions0[train]}\"" "\"${actions1[train]}\"" "0" "32" "32" "112" "100000" $nameAct > "$pathExec"build/"$logsFile".txt
-    # Full DTB : 686088 || Else : 100000
 
     # Compute the duration of this training
     time=$(( SECONDS - $startTime ))

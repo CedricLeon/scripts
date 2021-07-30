@@ -28,7 +28,6 @@ let "i = 0"
 echo "***********************************************************************************************"
 
 # Build the soft
-# Since last cmake update (3.19.8) bash doesn't find cmake in /usr/bin/, so I call the default cmake (included in $PATH)
 /usr/local/bin/cmake "$pathExec" -DCMAKE_BUILD_TYPE=Release -DTESTING=1
 
 # Create a file storing the final scores
@@ -57,8 +56,7 @@ for new in $(seq 5 5 500); do
     echo "Recompiling TPGVVCPartDatabase_binary"
     cmake --build "$pathExec"build/ --target TPGVVCPartDatabase_binary -- -j 38
 
-    # Starting the training (default: 200 generations ?)
-    # No &, we don't want to fork in this script : no parallel execution
+    # Starting the training
     echo "Executing and storing results in "$pathExec"build/"$logsFile""
     "$pathExec"build/TPGVVCPartDatabase_binary "$action" > "$pathExec"build/"$logsFile"
 

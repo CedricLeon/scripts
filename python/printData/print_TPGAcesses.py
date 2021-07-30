@@ -3,7 +3,13 @@ import sys
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
-print("This script ")
+print("This script is used to print the accesses of a TPG to a CU according to the out_best_stats.md file. Result is plot using matplotlib and corresponds to a sizeXsize image (CU) with a color bar legend.")
+print("This script is often used with launch_all_TPGs-Accesses_print.py which calls it many times.")
+
+if (len(sys.argv) != 2):
+    print("Illegal number of parameters")
+    print("Usage: python3.6 print_TPGAcesses.py FILE_NAME")
+    print("Example: python3.6 /home/cleonard/dev/stage/scripts/python/printData/print_TPGAcesses.py /home/cleonard/dev/stage/results/scripts_results/Binary/Actions_bal_dataset1/NP/out_best_stats_ent0_bNP_63,63.md")
 
 # Global variable
 size = 32
@@ -30,8 +36,8 @@ data = data[:-1]
 # Split data in a tab containing every pair
 pixels = data.split("} {")
 
-# Init accesses
-access = np.zeros((32, 32))
+# Init the access array
+access = np.zeros((size, size))
 
 # Store data in access
 for p in pixels:
@@ -40,7 +46,6 @@ for p in pixels:
     # Compute 2D indexes
     row = int(var[0]) // size
     col = int(var[0]) % size
-    #print(var, row, col)
     # Store number of accesses in the corresponding pixel
     access[row][col] = int(var[1])
 
@@ -56,18 +61,14 @@ for p in pixels:
 #               ]
 # # Create the colormap from my personnalized colors
 # my_cmap = LinearSegmentedColormap.from_list('topo_basic', topo_colors)
-# # Print access as an image with my colormap
-# plt.imshow(access, cmap=my_cmap)
-# # Plot a colorbar with my colormap for the scale
-# plt.colorbar(extend = 'both')
 
 # *** JET colormap (internet) ***
 cmap = plt.cm.jet  # define the colormap
-# extract all colors from the .jet map
+# Extract all colors from the .jet map
 cmaplist = [cmap(i) for i in range(cmap.N)]
-# force the first color entry to be grey
+# Force the first color entry to be white
 cmaplist[0] = (1, 1, 1, 1.0)
-# create the new map
+# Create the new map
 cmap = LinearSegmentedColormap.from_list(
     'Custom cmap', cmaplist, cmap.N)
 

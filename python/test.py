@@ -8,96 +8,16 @@ import shutil
 import csv
 import time
 import re
+import subprocess
 
-# Defining paths
-path_dataset_origin = sys.argv[1]   # '/media/cleonard/alex/cedric_TPG-VVC/balanced_datasets/32x32_balanced/'
-path_dataset_arrival = sys.argv[2]  # '/media/cleonard/alex/cedric_TPG-VVC/balanced_datasets/32x32_binary/'
-store_file = sys.argv[3]            # '/media/cleonard/alex/cedric_TPG-VVC/balanced_datasets/AllDtbCompo.txt'
+size = np.array(["128x128", "64x64", "32x32", "16x16", "8x8", "64x32", "32x64", "64x16", "16x64", "32x16", "16x32", "64x8", "8x64", "32x8", "8x32", "16x8", "8x16", "64x4", "4x64", "32x4", "4x32", "16x4", "4x16", "8x4", "4x8"]) # 25 different dtb
 
-totalNb = 100000
-actionsName =  ["NP", "QT", "DIREC", "HORI", "VERTI", "TTV"]
+availableSplitsDict = {            "4x8" : [0, 3],            "4x16" : [0, 3, 5],           "4x32" : [0, 3, 5],           "4x64" : [0, 3, 5],
+            "8x4" : [0, 2],     "8x8" : [0, 2, 3],         "8x16" : [0, 2, 3, 5],        "8x32" : [0, 2, 3, 5],        "8x64" : [0, 2, 3, 5],
+        "16x4" : [0, 2, 4], "16x8" : [0, 2, 3, 4],  "16x16" : [0, 1, 2, 3, 4, 5],    "16x32" : [0, 2, 3, 4, 5],    "16x64" : [0, 2, 3, 4, 5],
+        "32x4" : [0, 2, 4], "32x8" : [0, 2, 3, 4],     "32x16" : [0, 2, 3, 4, 5], "32x32" : [0, 1, 2, 3, 4, 5],    "32x64" : [0, 2, 3, 4, 5],
+        "64x4" : [0, 2, 4], "64x8" : [0, 2, 3, 4],     "64x16" : [0, 2, 3, 4, 5],    "64x32" : [0, 2, 3, 4, 5], "64x64" : [0, 1, 2, 3, 4, 5],
+        "128x128" : [0, 1] }
 
-# Picking every file
-fichiers = [f for f in listdir(path_dataset_origin) if isfile(join(path_dataset_origin, f))]
-
-nbMax = 50000
-
-for action in [3, 4]: # 0 1 2 3 4
-
-    # Shuffle files
-    np.random.shuffle(fichiers)
-
-    arriveDir = str(path_dataset_arrival+actionsName[action])
-
-    if not os.path.isdir(arriveDir):
-        print("Create directory \"", arriveDir, "\"")
-        os.mkdir(arriveDir)
-
-    print("nbMax : ", nbMax)
-
-    count = [0,0,0,0,0,0]
-
-    # Init index to rename files
-    filesCount = 0
-
-    for file in tqdm(fichiers):
-
-        # Open each file in the repertory
-        with open(path_dataset_origin+file) as csv_file:
-
-            # Open the file as a .csv and specify the delimiter
-            csv_reader = csv.reader(csv_file, delimiter=',')
-
-            # ... There is only 1 row whatever
-            for row in csv_reader:
-                # Get the split name
-                splitString = row[1]
-                # Deduce split number
-
-                if splitString == "NS":
-                    split = 0;
-                elif splitString == "QT":
-                    split = 1;
-                elif splitString == "BTH":
-                    split = 2;
-                elif splitString == "BTV":
-                    split = 3;
-                elif splitString == "TTH":
-                    split = 4;
-                elif splitString == "TTV":
-                    split = 5;
-                else:
-                    print("WTF : ", splitString)
-                    sys.exit("Unknown split name in : ", csv_file)
-
-                # Balance the database
-                if action == 3:
-                    if (split == 2 or split == 4) and count[split] < nbMax:
-                        # Copy
-                        shutil.copy(path_dataset_origin + file, arriveDir + "/" + str(filesCount) + ".csv")
-                        count[split] += 1
-                        # Increment the index of copied files
-                        filesCount += 1
-
-                elif action == 4:
-                    if (split == 3 or split == 5) and count[split] < nbMax:
-                        # Copy
-                        shutil.copy(path_dataset_origin + file, arriveDir + "/" + str(filesCount) + ".csv")
-                        count[split] += 1
-                        # Increment the index of copied files
-                        filesCount += 1
-
-    total = 0
-    for cnt in count:
-        total = total + cnt
-
-    lastDir = path_dataset_origin.split('/')[-2]
-    dtb = lastDir.replace("_balanced", "")
-
-    print("Database : ", dtb, "_", actionsName[action])
-    print("Count : ", count)
-    print("Total : ", total)
-    print("Copied files : ", filesCount)
-
-    # with open(store_file, "a") as file:
-    #     file.write(str(dtb)+"_"+actionsName[action]+" "+str(count)+" "+str(total)+"\n")
+for i in range(3, len(size)):
+    print(size[i] + " " + str(availableSplitsDict[size[i]]))

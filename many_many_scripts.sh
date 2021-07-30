@@ -1,17 +1,8 @@
 #!/bin/bash
 
-echo "Launch 30Roots 1 3  AND LotsOfRoots 4 8"
+echo "Launch AllProbProg with \"forceProgramBehaviorChangeOnMutation\": false 1 5"
 
-/home/cleonard/dev/stage/scripts/launch_many_scripts.sh /home/cleonard/dev/mnist2/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/ /home/cleonard/dev/stage/scripts/test.sh 30Roots 1 3
-
-echo ' '
-echo ' '
-echo ' '
-echo ' '
-echo ' '
-echo ' '
-
-/home/cleonard/dev/stage/scripts/launch_many_scripts.sh /home/cleonard/dev/mnist2/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/ /home/cleonard/dev/stage/scripts/test2.sh LotsOfRoots 4 8
+/home/cleonard/dev/stage/scripts/launch_many_scripts.sh /home/cleonard/dev/mnist2/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/ /home/cleonard/dev/stage/scripts/paramStudy/launch_MNIST_diff-Param_all-prob.sh AllProbProgUnforce 1 5
 
 echo ' '
 echo ' '
@@ -19,9 +10,20 @@ echo ' '
 echo ' '
 echo ' '
 echo ' '
+
+# echo "Launch double study Roots 4k roots 3 3 "
+
+# /home/cleonard/dev/stage/scripts/launch_many_scripts.sh /home/cleonard/dev/mnist2/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/ /home/cleonard/dev/stage/scripts/launch_MNIST_diff-Param_double_study.sh 4kRoots 3 3
+
+# echo ' '
+# echo ' '
+# echo ' '
+# echo ' '
+# echo ' '
+# echo ' '
 
 # # Launch parallel study for nbRoot and ratioDeletedRoots
-# /home/cleonard/dev/stage/scripts/paramStudy/launch_MNIST_diff-Param_double_study.sh /home/cleonard/dev/gegelati-apps/mnist/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/10kRoots1/ 10kRoots 1
+# /home/cleonard/dev/stage/scripts/paramStudy/launch_MNIST_diff-Param_double_study.sh /home/cleonard/dev/mnist2/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/10kRoots1/ 4kRoots 3
 
 # echo ' '
 # echo ' '

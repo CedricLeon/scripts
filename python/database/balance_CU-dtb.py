@@ -1,17 +1,26 @@
 import sys
+import os
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from os import listdir
-from os.path import isfile, join
 import shutil
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+print(bcolors.HEADER + "This script is used to balance a database of CU (.bin files). /!\\ May not be up to date." + bcolors.ENDC)
 
 # Defining paths
 path_dataset_origin = '/media/cleonard/alex/cedric_TPG-VVC/CU_datasets/dataset_tpg_32x32_27/'
-#'/home/cleonard/Data/binary_datasets/balanced_BTV_dataset/'
-#'/home/cleonard/Data/dataset_tpg_balanced/dataset_tpg_32x32_27_balanced2/'
-path_dataset_arrival = '/media/cleonard/alex/cedric_TPG-VVC/CU_datasets/CU_32x32_balanced/'
-#'/home/cleonard/Data/binary_datasets/tmp/
+path_dataset_arrival = '/home/cleonard/Data/CU/CU_32x32_balanced/'
 
 print("Origin Database  :", path_dataset_origin)
 print("Arrival Database :", path_dataset_arrival)

@@ -6,6 +6,18 @@ from os import listdir
 from os.path import isfile, join
 import shutil
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+print(bcolors.HEADER + "This script is a variation of balance_CU-dtb. /!\\ May not be up to date." + bcolors.ENDC)
 # Defining paths
 path_dataset_origin = '/home/cleonard/Data/dataset_tpg_balanced/dataset_tpg_32x32_27_balanced2/' #'/home/cleonard/Data/dataset_tpg_balanced/dataset_tpg_32x32_27_balanced2/'
 path_dataset_arrival = '/home/cleonard/Data/binary_datasets/tmp/'
@@ -22,10 +34,6 @@ for file in tqdm(fichiers):
     bin_file = open(path_dataset_origin+file,'rb')
     bin_file.read(1024)
     split = int.from_bytes(bin_file.read(1),'big')
-
-    # Only counting:
-    #count[split] +=1
-
 
     # Copying every same split:
     if split != 5:

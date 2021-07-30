@@ -8,9 +8,25 @@ import csv
 import time
 import re
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+print(bcolors.HEADER + "This script is used to count the classes repartition of a database containing files with features for 10 CUs. Please check full_DTB_management.py for it's full usage." + bcolors.ENDC)
 # Defining paths
 path_dataset_origin = sys.argv[1]   # '/home/cleonard/Data/features/32x32_unbalanced/'
-store_file = sys.argv[2]            # '/media/cleonard/alex/cedric_TPG-VVC/unbalanced_datasets/AllDtbCompo.txt'
+
+storeResult = 1
+if storeResult:
+    store_file = sys.argv[2]        # '/media/cleonard/alex/cedric_TPG-VVC/unbalanced_datasets/AllDtbCompo.txt'
+
 dtb = path_dataset_origin.split('/')[-2]
 
 # Picking every file
@@ -65,9 +81,9 @@ total = 0
 for cnt in count:
     total = total + cnt
 
-print("Database : ", dtb)
-print("Count : ", count)
-print("Total : ", total)
+# print("Database : ", dtb)
+print("Count:", count, total)
 
-with open(store_file, "a") as file:
-    file.write(str(dtb)+" "+str(count)+" "+str(total)+"\n")
+if storeResult:
+    with open(store_file, "a") as file:
+        file.write(str(dtb)+" "+str(count)+" "+str(total)+"\n")

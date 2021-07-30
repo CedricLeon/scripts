@@ -6,6 +6,19 @@ from os import listdir
 from os.path import isfile, join
 import shutil
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+print(bcolors.HEADER + "This script is used to count a database of CU (.bin files). /!\\ May not be up to date." + bcolors.ENDC)
+
 # Defining paths
 path_dataset_origin = '/media/cleonard/alex/cedric_TPG-VVC/CU_datasets/'
 #'/home/cleonard/Data/binary_datasets/'
@@ -39,4 +52,4 @@ for dataset_name in other_dataset:
 
     print("Database :", path)
     print("Count :", count)
-    rint("Total :", total)
+    print("Total :", total)

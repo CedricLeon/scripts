@@ -1,4 +1,5 @@
 import sys
+import os
 import numpy as np
 from tqdm import tqdm
 from os import listdir
@@ -7,36 +8,66 @@ import shutil
 import csv
 import time
 import re
+import math
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+print(bcolors.HEADER + "This script is used to balance a database of .csv files owning features for 10 CUs. Please check full_DTB_management.py for it's full usage." + bcolors.ENDC)
+
+print("Example: python3.6 /home/cleonard/dev/stage/scripts/python/database/balance_10CSV-dtb_from_unbalanced.py /media/cleonard/alex/cedric_TPG-VVC/unbalanced_datasets/32x64/ /media/cleonard/alex/cedric_TPG-VVC/balanced_datasets/ /media/cleonard/alex/cedric_TPG-VVC/Composition_unbalanced_dtb.txt /media/cleonard/alex/cedric_TPG-VVC/balanced_datasets/AllDtbCompo.txt")
 
 # Defining paths
-path_dataset_origin = sys.argv[1]   # '/home/cleonard/Data/features/32x32_unbalanced/'
+path_dataset_origin  = sys.argv[1]  # '/home/cleonard/Data/features/32x32_unbalanced/'
 path_dataset_arrival = sys.argv[2]  # '/home/cleonard/Data/features/balanced2/'
-recap_file = sys.argv[3]            # '/media/cleonard/alex/cedric_TPG-VVC/unbalanced_datasets/AllDtbCompo.txt'
+recap_file = sys.argv[3]            # '/media/cleonard/alex/cedric_TPG-VVC/Composition_unbalanced_dtb.txt'
+store_file = sys.argv[4]            # '/media/cleonard/alex/cedric_TPG-VVC/unbalanced_datasets/AllDtbCompo.txt'
 
-# If balancing the database, Init the nbMax elements of each class
-# For "/home/cleonard/Data/features/unbalanced/" min class is "TTH" with 119375 elements
+# Create arrival directory if it doesn't exist (/!\ DOESN'T EMPTY IT ELSE)
+path_dataset_arrival = str(path_dataset_arrival + path_dataset_origin.split("/")[-2] + "_balanced/")
+if not os.path.isdir(path_dataset_arrival):
+    print("Create directory \"", path_dataset_arrival, "\"")
+    os.mkdir(path_dataset_arrival)
+
+# Get dtb name
 dtb = path_dataset_origin.split('/')[-2]
 
+# Init the min elements of each class
+# For "/home/cleonard/Data/features/unbalanced/" min class is "TTH" with 119375 elements
+nbCus = np.array([])
 with open(recap_file, "r") as file:
     for line in file:
         if re.search(dtb, line):
-
+            # Get CUs repartition (avoid dtb_name and total)
             words = line.split(' ')
             words = words[1:]
             words = words[:-1]
-            print(words)
 
-            nbMax = 1
+            # Avoid nbFeatures in the count
+            i = 0
             for w in words:
-                if w: # Check if w isn't empty
-                    w = w.replace("[", "")
-                    w = w.replace(",", "")
-                    w = w.replace("]", "")
-                    print(w)
-                    if nbMax == 1 or nbMax > int(w):
-                        nbMax = int(w)
+                if w and w[0] == "[":
+                    words = words[i:]
+                    break
+                i += 1
 
-print("Min :", nbMax)
+            for w in words:
+                w = w.replace("[", "")
+                w = w.replace(",", "")
+                w = w.replace("]", "")
+                nbCus = np.append(nbCus, int(w))
+
+# Compute min and print it
+min = int(min(nbCus[ nbCus != 0 ]))
+print(str(nbCus) + bcolors.OKCYAN + " Min: " + str(min) + bcolors.ENDC)
 
 # Picking every file
 fichiers = [f for f in listdir(path_dataset_origin) if isfile(join(path_dataset_origin, f))]
@@ -46,8 +77,9 @@ np.random.shuffle(fichiers)
 count = [0,0,0,0,0,0]
 
 # Init index to rename files
-i = 0
+copiedFiles = 0
 
+# Browse files
 for file in tqdm(fichiers):
 
     # Open each file in the repertory
@@ -86,32 +118,33 @@ for file in tqdm(fichiers):
                     print("WTF : ", splitString)
                     sys.exit("Unknown split name in : ", csv_file, ", at line ", line_count)
 
-                count[split] += 1
-
                 # Balance the database
-                if count[split] < nbMax:
+                if count[split] < min:
                     # Transform row in a string by concatenating each word and a ','
                     data = ""
                     for word in row[1:]: # We don't take the first word wich corresponds to the "CU" number in the original csv file: no interest
                         data += word + ','
                     data = data[:-1]
-                    #print(data)
 
                     # Create or overwrite a file and write data in it
-                    file = open(path_dataset_arrival + str(i) + ".csv", "w")
+                    arrivalFile = path_dataset_arrival + str(copiedFiles) + ".csv"
+                    file = open(arrivalFile, "w")
                     file.write(data)
 
                     # Increment the index of copied files
-                    i += 1
+                    count[split] += 1
+                    copiedFiles += 1
 
+# Compute Total and check if there is as much copied files as expected
 total = 0
 for cnt in count:
     total = total + cnt
 
-print("Database : ", dtb)
-print("Count : ", count)
-print("Total : ", total)
-print("Copied files : ", i)
+check = bcolors.OKGREEN
+if copiedFiles != total:
+    check = bcolors.WARNING
 
+# Print and store results
+print("Count: " + str(count) + ", total: " + check + str(total) + bcolors.ENDC + " Copied files: " + check + str(copiedFiles) + bcolors.ENDC)
 with open(store_file, "a") as file:
-    file.write(str(dtb)+" "+str(count)+" "+str(total)+"\n")
+    file.write(str(dtb)+"_balanced"+" "+str(count)+" "+str(total)+"\n\n")

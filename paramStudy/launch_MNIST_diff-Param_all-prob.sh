@@ -7,7 +7,7 @@ echo "CARE: you should check and modify the serie of your parameters values."
 if [ "$#" -ne 4 ]; then
     echo "Illegal number of parameters"
     echo "Usage: launch_MNIST_diff-Param_all-prob.sh PATH_TO_PROGRAM_DIR PATH_TO_RESULT_DIR PARAM_NAME SEED"
-    echo "Example: /home/cleonard/dev/stage/scripts/paramStudy/launch_MNIST_diff-Param_all-prob.sh /home/cleonard/dev/gegelati-apps/mnist/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/ AllTPGProb 2021"
+    echo "Example: /home/cleonard/dev/stage/scripts/paramStudy/launch_MNIST_diff-Param_all-prob.sh /home/cleonard/dev/gegelati-apps/mnist/ /home/cleonard/dev/stage/results/scripts_results/params_study/onMNIST/ AllProbTPG 2021"
     exit
 fi
 
@@ -49,7 +49,7 @@ echo "**************************************************************************
 # Initialise the file containing final results
 resultFile="$pathRes"lastScore.logs
 echo "Final results are stored in \"$resultFile\""
-echo "Tested Param: All Prob for tpg. Trainings lead on MNIST with default Kelly parameters on $nbGen generations. With seed : $seed." > "$resultFile"
+echo "Tested Param: "$param". Trainings lead on MNIST with default Kelly parameters on $nbGen generations. With seed : $seed." > "$resultFile"
 echo "Training Value Temps Generation Score" >> "$resultFile"
 
 # Main loop
@@ -70,7 +70,7 @@ for new in 0,01 $(seq 0.05 0.05 1.0); do
     confMatFile=confMat"$fileName"
 
     # Modify the params.json file with the new value of the studied parameter
-    echo "Modifying params.json with: All tpg Prob: $new"
+    echo "Modifying params.json with: "$param": $new"
     sed -i "s/\"$p1\": $lastP1/\"$p1\": $new/g" "$pathExec"params.json
     sed -i "s/\"$p2\": $lastP2/\"$p2\": $new/g" "$pathExec"params.json
     sed -i "s/\"$p3\": $lastP3/\"$p3\": $new/g" "$pathExec"params.json
@@ -82,8 +82,7 @@ for new in 0,01 $(seq 0.05 0.05 1.0); do
     #/usr/local/bin/cmake "$pathExec" -DCMAKE_BUILD_TYPE=Release
     /usr/local/bin/cmake --build "$pathExec"bin/ --target mnist -- -j 38
 
-    # Start the training (default: 200 generations ?)
-    # No &, we don't want to fork in this script : no parallel execution
+    # Start the training
     echo "Executing and storing results in "$pathExec"bin/"$logsFile""
     "$pathExec"bin/Release/mnist $seed > "$pathExec"bin/"$logsFile"
 

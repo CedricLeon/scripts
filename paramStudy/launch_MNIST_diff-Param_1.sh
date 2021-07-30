@@ -43,7 +43,7 @@ echo "Tested Param: $param. Trainings lead on MNIST with default Kelly parameter
 echo "Training Value Temps Generation Score" >> "$resultFile"
 
 # Main loop
-for new in 5000 7000 10000; do
+for new in 1 5 10 30 50 100 360 500 1000 2000 3000 4000 5000 7000 10000; do
 
     # seq generate float number with ',' and not '.' wich is annoying
     new="${new/,/.}"
@@ -68,8 +68,7 @@ for new in 5000 7000 10000; do
     #/usr/local/bin/cmake "$pathExec" -DCMAKE_BUILD_TYPE=Release
     /usr/local/bin/cmake --build "$pathExec"bin/ --target mnist -- -j 38
 
-    # Start the training (default: 200 generations ?)
-    # No &, we don't want to fork in this script : no parallel execution
+    # Start the training
     echo "Executing and storing results in "$pathExec"bin/"$logsFile""
     "$pathExec"bin/Release/mnist $seed > "$pathExec"bin/"$logsFile"
 

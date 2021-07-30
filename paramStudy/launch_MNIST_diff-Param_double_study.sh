@@ -30,8 +30,7 @@ last2=$originalParam2
 nbGen=`cat "$pathExec"params.json | grep "\"nbGenerations\"" | grep -o '[0-9]*'`
 
 # Training number (to identify results)
-let "i = 8"
-
+let "i = 1"
 # Script duration
 start=$SECONDS
 
@@ -40,11 +39,11 @@ echo "**************************************************************************
 # Initialise the file containing final results
 resultFile="$pathRes"lastScore.logs
 echo "Final results are stored in \"$resultFile\""
-# echo "Tested Params: $param1 and $param2. Trainings lead on MNIST with default Kelly parameters on $nbGen generations. With seed : $seed." > "$resultFile"
-# echo "Training $param1 $param2 Temps Generation Score" >> "$resultFile"
+echo "Tested Params: $param1 and $param2. Trainings lead on MNIST with default Kelly parameters on $nbGen generations. With seed : $seed." > "$resultFile"
+echo "Training $param1 $param2 Temps Generation Score" >> "$resultFile"
 
 # Main loop
-for new1 in 10000; do #1 5 10 50 100 500 1000 2000 3000; do
+for new1 in 1 5 10 30 50 100 360 500 1000 2000 3000 4000 5000 7000 10000; do
 
     # Modify the params.json file with the new value of the studied parameter
     echo " "
@@ -72,8 +71,7 @@ for new1 in 10000; do #1 5 10 50 100 500 1000 2000 3000; do
         echo "Recompiling mnist"
         /usr/local/bin/cmake --build "$pathExec"bin/ --target mnist -- -j 38
 
-        # Start the training (default: 200 generations ?)
-        # No &, we don't want to fork in this script : no parallel execution
+        # Start the training
         echo "Executing and storing results in "$pathExec"bin/"$logsFile""
         "$pathExec"bin/Release/mnist $seed > "$pathExec"bin/"$logsFile"
 
@@ -99,10 +97,9 @@ for new1 in 10000; do #1 5 10 50 100 500 1000 2000 3000; do
         last1=$new1
         last2=$new2
         let "i += 1"
+
     done
 done
-
-
 
 # Reset the param
 echo "Reseting params.json with: \"$param1\": $originalParam1 and \"$param2\": $originalParam2"

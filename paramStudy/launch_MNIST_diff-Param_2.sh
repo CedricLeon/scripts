@@ -50,6 +50,7 @@ echo "Final results are stored in \"$resultFile\""
 echo "Tested Params: $param1 and $param2. Trainings lead on MNIST with default Kelly parameters on $nbGen generations. With seed : $seed." > "$resultFile"
 echo "Training Value1 Value2 Temps Generation Score" >> "$resultFile"
 
+# If the second parameters is not equal to the first use  "param2Values"
 #param2Values=( "0.01" "0.05" "0.1" "0.15" "0.2" "0.25" "0.3" "0.35" "0.4" "0.42" "0.44" "0.46" "0.48" "0.5" "0.52" "0.54" "0.56" "0.58" "0.6" "0.65" "0.7" "0.75" "0.8" "0.85" "0.9" "0.95" "1.0" ) # 27
 
 # Main loop
@@ -82,7 +83,6 @@ for new in 0,01 $(seq 0.05 0.05 0.8) $(seq 0.82 0.02 1.0); do
     /usr/local/bin/cmake --build "$pathExec"bin/ --target mnist -- -j 38
 
     # Start the training
-    # No &, we don't want to fork in this script : no parallel execution
     echo "Executing and storing results in "$pathExec"bin/"$logsFile""
     "$pathExec"bin/Release/mnist $seed > "$pathExec"bin/"$logsFile"
 

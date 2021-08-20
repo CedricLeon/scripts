@@ -42,11 +42,11 @@ veryStartTime = time.time()
 
 # Init main arguments
 pathExec         = "/home/cleonard/dev/TpgVvcPartDatabase/"
-pathRes          = "/home/cleonard/dev/stage/results/scripts_results/BinaryFeatures/cascade-full/TaillesDif/ult-script1/"
+pathRes          = sys.argv[1]
 pathBalancedDTB  = "/media/cleonard/alex/cedric_TPG-VVC/balanced_datasets/"
 execName         = "TPGVVCPartDatabase_inferenceBinaryFeatures"
 seed             = 0
-nbEvaluation     = 50
+nbEvaluation     = 1
 
 # Init and open recapitulative files
 fileRecapBalancedName          = pathBalancedDTB + "Balanced_DTB_Composition.txt"
@@ -65,7 +65,7 @@ with open(fileRecapAllScoreInferenceName, "a") as file:
     file.write("DTB Score(%) NbMoySplits\n")
 
 # Every dtb size
-#size = np.array(["32x64", "64x16", "16x64", "32x16", "16x32", "64x8", "8x64", "32x8", "8x32", "16x8"]) # For test purposes
+#size = np.array(["128x128"]) # For test purposes
 size = np.array(["128x128", "64x64", "32x32", "16x16", "8x8", "64x32", "32x64", "64x16", "16x64", "32x16", "16x32", "64x8", "8x64", "32x8", "8x32", "16x8", "8x16", "64x4", "4x64", "32x4", "4x32", "16x4", "4x16", "8x4", "4x8"]) # 25 different dtb (DO NOT SWITH ORDER)
 
 # For each dtb, how many CNN features does a single .csv file own ?
@@ -85,7 +85,7 @@ availableSplitsDict = {            "4x8" : [0, 3],            "4x16" : [0, 3, 5]
         "128x128" : [0, 1] }
 
 # For every database
-for i in range(17, 18): # len(size)
+for i in range(len(size)): # 18, 19
 
     # Time the inference test
     startTime = time.time()

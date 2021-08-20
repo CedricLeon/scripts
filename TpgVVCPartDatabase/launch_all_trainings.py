@@ -5,8 +5,6 @@ import time
 import re
 import numpy as np
 
-print(bcolors.HEADER + "This script launch a bunch of trainings of TpgVVCPartDatabase for different database. /!\\ Can only be used in specific conditions." + bcolors.ENDC)
-
 # Define console logs colors
 class bcolors:
     HEADER = '\033[95m'
@@ -18,6 +16,8 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
     ENDC = '\033[0m'
+
+print(bcolors.HEADER + "This script launch a bunch of trainings of TpgVVCPartDatabase for different database. /!\\ Can only be used in specific conditions." + bcolors.ENDC)
 
 # Create MACRO to execute bash commands adn print it in stdout
 def execAndPrintBashCmd(cmd, spaces):
@@ -40,8 +40,8 @@ def printHumanTimeFromSeconds(value, spaces):
 veryStartTime = time.time()
 
 # Init main arguments
-pathExec        = "/home/cleonard/dev/TpgVvcPartDatabase/"
-pathRes         = "/home/cleonard/dev/stage/results/scripts_results/BinaryFeatures/cascade-full/TaillesDif/ult-script1/"
+pathExec        = "/home/cleonard/dev/TpgVvcPartDatabase2/"
+pathRes         = "/home/cleonard/dev/stage/results/scripts_results/BinaryFeatures/cascade-full/TaillesDif/ult-script2_BIG/"
 pathBalancedDTB = "/media/cleonard/alex/cedric_TPG-VVC/balanced_datasets/"
 execName        = "TPGVVCPartDatabase_binaryFeaturesEnv"
 seed            = 0
@@ -70,7 +70,7 @@ actionsName      = ["NP", "QT", "BTH", "BTV", "TTH", "TTV"]
 remainingActions = ["{1,2,3,4,5}", "{0,2,3,4,5}", "{0,1,3,4,5}", "{0,1,2,4,5}", "{0,1,2,3,5}", "{0,1,2,3,4}"]
 
 # Every dtb size
-#size = np.array(["4x8"]) # For test purposes
+#size = np.array(["128x128"]) # For test purposes
 size = np.array(["128x128", "64x64", "32x32", "16x16", "8x8", "64x32", "32x64", "64x16", "16x64", "32x16", "16x32", "64x8", "8x64", "32x8", "8x32", "16x8", "8x16", "64x4", "4x64", "32x4", "4x32", "16x4", "4x16", "8x4", "4x8"]) # 25 different dtb
 
 # For each dtb, how many CNN features does a single .csv file own ?
@@ -92,7 +92,7 @@ availableSplitsDict = {            "4x8" : [0, 3],            "4x16" : [0, 3, 5]
 trainingNumber = 1
 
 # For every database
-for i in range(6, len(size)):
+for i in range(len(size)):
 
     # Compute dtb name + result directory name
     dtb = size[i]

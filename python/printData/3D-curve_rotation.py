@@ -15,7 +15,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-print(bcolors.WARNING + "This script don't work, it's just a bunch of code to rotate a 3D-Curve.\n" + bcolors.ENDC)
+print(bcolors.WARNING + "This script don't work, it's just a bunch of code which could be used to rotate a 3D-Curve.\n" + bcolors.ENDC)
 
 # Our 2-dimensional distribution will be over variables X and Y
 N = 60

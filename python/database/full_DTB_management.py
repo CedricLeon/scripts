@@ -8,7 +8,7 @@ class bcolors:
     RED = '\033[91m'
     ENDC = '\033[0m'
 
-print(bcolors.HEADER + "This script unzip, count, balance and create personnnalized datasets for a set of databases. /!\\ Can only be used in specific conditions and with other specific scripts. Please check count_10CSV-dtb.py, balance_10CSV-dtb_from_unbalanced.py and balance_1CSV-dtb_from_balanced.py." + bcolors.ENDC)
+print(bcolors.HEADER + "This script unzip, count, balance and create personalized datasets for a set of databases. /!\\ Can only be used in specific conditions and with other specific scripts. Please check count_10CSV-dtb.py, balance_10CSV-dtb_from_unbalanced.py and balance_1CSV-dtb_from_balanced.py." + bcolors.ENDC)
 
 # Init scripts
 pathExec = "/home/cleonard/dev/stage/scripts/python/database/"
